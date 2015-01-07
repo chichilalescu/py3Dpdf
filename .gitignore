@@ -1,0 +1,6 @@
+*.pdf
+*.asy
+build/*
+dist/*
+py2asy.egg-info/*
+.*.swp
