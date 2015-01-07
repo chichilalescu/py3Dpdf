@@ -8,17 +8,18 @@ import subprocess
 def curve3D_to_asy(
         points,
         color = (1, 0, 0),
-        arrow_on = False):
+        arrow_on = False,
+        spline_on = False):
     # vertices
-    asy_txt = ('real[] x;\n' +
-               'real[] y;\n' +
-               'real[] z;\n')
+    asy_txt = 'path3 p=' + str(tuple(points[0]))
     # store points
-    for i in range(points.shape[0]):
-        asy_txt += ('x[{0}] = {1};\n'.format(i, points[i, 0]) +
-                    'y[{0}] = {1};\n'.format(i, points[i, 1]) +
-                    'z[{0}] = {1};\n'.format(i, points[i, 2]))
-    asy_txt += ('draw(graph(x,y,z), ' +
+    connector = '--'
+    if spline_on:
+        connector = '..'
+    for i in range(1, points.shape[0]):
+        asy_txt += connector + str(tuple(points[i]))
+    asy_txt += ';\n'
+    asy_txt += ('draw(p, ' +
                 'rgb{0}, '.format(str(color)))
     if arrow_on:
         asy_txt += 'arrow = Arrow3, '
@@ -31,7 +32,10 @@ def triangulated_surface_to_asy(
         triangles,
         color = (1, 0, 0)):
     # vertices
-    asy_txt = 'triple[] V;\n'
+    asy_txt = 'triple[] V={' + str(tuple(points[0]))
+    for i in range(1, points.shape[0]):
+        asy_txt += ',' + str(tuple(points[i]))
+    asy_txt += '};\n'
     # triface function
     asy_txt += ('guide3 triface_(int i, int j, int k)\n' +
                 '{\n' +
@@ -41,9 +45,6 @@ def triangulated_surface_to_asy(
                 '}\n')
     # triangles
     asy_txt += 'path3[] T;\n'
-    # store points
-    for i in range(points.shape[0]):
-        asy_txt += 'V[{0}] = {1};\n'.format(i, str(tuple(points[i])))
     # store triangles
     for i in range(triangles.shape[0]):
         asy_txt += 'T[{0}] = triface_{1};\n'.format(i, str(tuple(triangles[i])))
