@@ -57,7 +57,8 @@ def triangulated_surface_to_asy(
 
 def asy_to_pdf(
         figname = 'tst',
-        asy_objects = []):
+        asy_objects = [],
+        keep_tex = False):
     with open(figname + '.asy', 'w') as outfile:
         outfile.write(
             "import three;\n" +
@@ -67,8 +68,14 @@ def asy_to_pdf(
             "currentlight=Viewport;\n\n")
         for obj in asy_objects:
             outfile.write(obj)
+    command = 'asy -render 1 '
+    if keep_tex:
+        command += '-keep -tex pdflatex '
+    else:
+        command += '-f pdf '
+    command += figname
     subprocess.Popen(
-        'asy -render 1 -f pdf ' + figname,
+        command,
         shell=True).wait()
     return None
 

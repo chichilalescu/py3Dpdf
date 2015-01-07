@@ -31,7 +31,9 @@ def main(
     asy_txt = py2asy.triangulated_surface_to_asy(
         data[0]['points'],
         data[0]['triangles'])
-    py2asy.asy_to_pdf(asy_objects = [asy_txt])
+    py2asy.asy_to_pdf(
+        asy_objects = [asy_txt],
+        keep_tex = True)
     return None
 
 if __name__ == '__main__':
