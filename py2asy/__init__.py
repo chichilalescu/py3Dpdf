@@ -44,10 +44,11 @@ def triangulated_surface_to_asy(
                 'return gh;\n' +
                 '}\n')
     # triangles
-    asy_txt += 'path3[] T;\n'
+    asy_txt += 'path3[] T={triface_' + str(tuple(triangles[0]))
     # store triangles
-    for i in range(triangles.shape[0]):
-        asy_txt += 'T[{0}] = triface_{1};\n'.format(i, str(tuple(triangles[i])))
+    for i in range(1, triangles.shape[0]):
+        asy_txt += ',triface_' + str(tuple(triangles[i]))
+    asy_txt += '};\n'
     asy_txt += ('draw(surface(T), ' +
                 'rgb{0}, '.format(str(color)) +
                 'render(compression = High, merge = true))' +
