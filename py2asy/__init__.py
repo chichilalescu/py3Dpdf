@@ -7,7 +7,8 @@ import subprocess
 
 def curve3D_to_asy(
         points,
-        color = (1, 0, 0)):
+        color = (1, 0, 0),
+        arrow_on = False):
     # vertices
     asy_txt = ('real[] x;\n' +
                'real[] y;\n' +
@@ -18,8 +19,10 @@ def curve3D_to_asy(
                     'y[{0}] = {1};\n'.format(i, points[i, 1]) +
                     'z[{0}] = {1};\n'.format(i, points[i, 2]))
     asy_txt += ('draw(graph(x,y,z), ' +
-                'rgb{0}, '.format(str(color)) +
-                'render(compression = High, merge = true))' +
+                'rgb{0}, '.format(str(color)))
+    if arrow_on:
+        asy_txt += 'arrow = Arrow3, '
+    asy_txt += ('render = render(compression = High, merge = true))' +
                 ';\n')
     return asy_txt
 
