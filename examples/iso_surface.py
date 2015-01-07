@@ -1,51 +1,6 @@
 import numpy as np
-from mayavi import mlab
 import py2asy
-
-def get_isosurface_data(
-        field,
-        xgrid = None,
-        ygrid = None,
-        zgrid = None,
-        value = None):
-    """
-    got the idea from
-    http://enthought-dev.117412.n3.nabble.com/Accessing-the-triangle-data-of-a-mayavi-isosurface-td4025879.html
-    """
-    ## we need to use the transpose when plotting, because of reasons
-    ## (no, I don't understand and I don't want to understand. it's stupid)
-    if type(value) == type(None):
-        value = np.average(field)
-    if type(xgrid) == type(None):
-        zgrid, ygrid, xgrid = np.mgrid[
-                0:field.shape[0]-1:field.shape[0]*1j,
-                0:field.shape[1]-1:field.shape[1]*1j,
-                0:field.shape[2]-1:field.shape[2]*1j]
-        bla = mlab.contour3d(
-                field.T,
-                contours = [value],
-                transparent = True)
-    else:
-        bla = mlab.contour3d(
-                xgrid.T,
-                ygrid.T,
-                zgrid.T,
-                field.T,
-                contours = [value],
-                transparent = True)
-
-    my_actor = bla.actor.actors[0]
-    poly_data_object = my_actor.mapper.input
-    points = np.array(poly_data_object.points)
-
-    the_cells  = np.reshape(poly_data_object.polys.data.to_array(), [-1,4])
-    triangles = the_cells[:, 1:].copy()
-    del the_cells
-
-    # points are stored as single precision, since I may feed them to getData
-    data = {'points'    : points.astype(np.float32),
-            'triangles' : triangles}
-    return data
+import py2asy.tvtk_tools
 
 def main(
         n = 32,
@@ -66,15 +21,16 @@ def main(
                 f += ((a[k, j, i]*np.cos(i*x + (j-kmax)*y + (k-kmax)*z) +
                        b[k, j, i]*np.sin(i*x + (j-kmax)*y + (k-kmax)*z)) /
                       (i**2 + j**2 + k**2 + 1)**.75)
-    data = get_isosurface_data(
-        f,
-        xgrid = x,
-        ygrid = y,
-        zgrid = z,
-        value = 0.0)
+    grid1D = np.linspace(-np.pi, np.pi, n, endpoint = False)
+    data = py2asy.tvtk_tools.get_isosurface_data(
+        field = f,
+        x1Dgrid = grid1D,
+        y1Dgrid = grid1D,
+        z1Dgrid = grid1D,
+        values = [0.0])
     asy_txt = py2asy.triangulated_surface_to_asy(
-        data['points'],
-        data['triangles'])
+        data[0]['points'],
+        data[0]['triangles'])
     py2asy.asy_to_pdf(asy_objects = [asy_txt])
     return None
 
