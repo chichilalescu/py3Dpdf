@@ -4,3 +4,10 @@ build/*
 dist/*
 py2asy.egg-info/*
 .*.swp
+*.eps
+*.tex
+*.js
+*.prc
+*.log
+*.aux
+*.out
