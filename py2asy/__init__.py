@@ -3,6 +3,8 @@
 
 
 import numpy as np
+import random
+import string
 import subprocess
 
 def curve3D_to_asy(
@@ -27,7 +29,7 @@ def curve3D_to_asy(
                 ';\n')
     return asy_txt
 
-def triangulated_surface_to_asy(
+def triangulated_surface_to_plain_asy(
         points,
         triangles,
         color = (1, 0, 0)):
@@ -55,17 +57,65 @@ def triangulated_surface_to_asy(
                 ';\n')
     return asy_txt
 
+def triangulated_surface_to_obj_asy(
+        points,
+        triangles,
+        color = (1, 0, 0),
+        obj_file = None):
+    # first, generate object file
+    if type(obj_file == None):
+        obj_file = (''.join(random.choice(string.ascii_lowercase +
+                                          string.ascii_uppercase +
+                                          string.digits)
+                    for _ in range(8)) +
+                    '.obj')
+    with open(obj_file, 'w') as ofile:
+        for i in range(points.shape[0]):
+            ofile.write('v {0:.6f} {1:.6f} {2:.6f}\n'.format(
+                                                          points[i, 0],
+                                                          points[i, 1],
+                                                          points[i, 2]))
+        ofile.write('\n')
+        triangles += 1
+        for i in range(triangles.shape[0]):
+            ofile.write('f {0} {1} {2}\n'.format(triangles[i, 0],
+                                                 triangles[i, 1],
+                                                 triangles[i, 2]))
+        ofile.write('\n')
+    return ('draw(obj("' + obj_file + '", ' +
+            'rgb{0}))'.format(str(color)) +
+            ';\n')
+
+def triangulated_surface_to_asy(
+        points,
+        triangles,
+        color = (1, 0, 0),
+        plain_asy = True,
+        obj_file = None):
+    if plain_asy:
+        return triangulated_surface_to_plain_asy(
+                points,
+                triangles,
+                color)
+    else:
+        return triangulated_surface_to_obj_asy(
+                points,
+                triangles,
+                color,
+                obj_file)
+
 def asy_to_pdf(
         figname = 'tst',
         asy_objects = [],
         keep_tex = False):
     with open(figname + '.asy', 'w') as outfile:
         outfile.write(
-            "import three;\n" +
-            "import graph3;\n" +
-            "size(20cm);\n" +
-            "//currentprojection=perspective(250,-250,250);\n" +
-            "currentlight=Viewport;\n\n")
+            'import three;\n' +
+            'import graph3;\n' +
+            'import obj;\n' +
+            'size(20cm);\n' +
+            '//currentprojection=perspective(250,-250,250);\n' +
+            'currentlight=Viewport;\n\n')
         for obj in asy_objects:
             outfile.write(obj)
     command = 'asy -render 1 '
