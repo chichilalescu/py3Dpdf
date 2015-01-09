@@ -1,6 +1,9 @@
+#! /usr/bin/env python2
+
 import numpy as np
-import py2asy
-import py2asy.tvtk_tools
+import mathgl
+import py3Dpdf
+import py3Dpdf.tvtk_tools
 
 def main(
         n = 32,
@@ -22,18 +25,25 @@ def main(
                        b[k, j, i]*np.sin(i*x + (j-kmax)*y + (k-kmax)*z)) /
                       (i**2 + j**2 + k**2 + 1)**.75)
     grid1D = np.linspace(-np.pi, np.pi, n, endpoint = False)
-    data = py2asy.tvtk_tools.get_isosurface_data(
+    data = py3Dpdf.tvtk_tools.get_isosurface_data(
         field = f,
         x1Dgrid = grid1D,
         y1Dgrid = grid1D,
         z1Dgrid = grid1D,
         values = [0.0])
-    asy_txt = py2asy.triangulated_surface_to_asy(
+    asy_txt = py3Dpdf.triangulated_surface_to_asy(
         data[0]['points'],
         data[0]['triangles'])
-    py2asy.asy_to_pdf(
+    py3Dpdf.asy_to_pdf(
         asy_objects = [asy_txt],
-        keep_tex = True)
+        figname = 'asy_iso_test')
+    gr = mathgl.mglGraph()
+    py3Dpdf.triangulated_surface_to_mglGraph(
+        graph = gr,
+        points = data[0]['points'],
+        triangles = data[0]['triangles'])
+    gr.WritePNG('mgl_iso_test.png')
+    gr.WritePRC('mgl_iso_test.prc')
     return None
 
 if __name__ == '__main__':

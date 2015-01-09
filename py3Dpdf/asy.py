@@ -1,3 +1,24 @@
+#######################################################################
+#                                                                     #
+#  Copyright 2014 Cristian C Lalescu                                  #
+#                                                                     #
+#  This file is part of py3Dpdf.                                      #
+#                                                                     #
+#  py3Dpdf is free software: you can redistribute it and/or modify    #
+#  it under the terms of the GNU General Public License as published  #
+#  by the Free Software Foundation, either version 3 of the License,  #
+#  or (at your option) any later version.                             #
+#                                                                     #
+#  py3Dpdf is distributed in the hope that it will be useful,         #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of     #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      #
+#  GNU General Public License for more details.                       #
+#                                                                     #
+#  You should have received a copy of the GNU General Public License  #
+#  along with py3Dpdf.  If not, see <http://www.gnu.org/licenses/>    #
+#                                                                     #
+#######################################################################
+
 # inspired by Amit Aides' pyasymp2.py, found at
 # http://comments.gmane.org/gmane.comp.python.enthought.devel/31471
 
@@ -34,9 +55,11 @@ def triangulated_surface_to_plain_asy(
         triangles,
         color = (1, 0, 0)):
     # vertices
-    asy_txt = 'triple[] V={' + str(tuple(points[0]))
+    def finite_prec_triple(values):
+        return '({0:.7e},{1:.7e},{2:.7e})'.format(values[0], values[1], values[2])
+    asy_txt = 'triple[] V={' + finite_prec_triple(points[0])
     for i in range(1, points.shape[0]):
-        asy_txt += ',' + str(tuple(points[i]))
+        asy_txt += ',' + finite_prec_triple(points[i])
     asy_txt += '};\n'
     # triface function
     asy_txt += ('guide3 triface_(int i, int j, int k)\n' +
@@ -53,7 +76,7 @@ def triangulated_surface_to_plain_asy(
     asy_txt += '};\n'
     asy_txt += ('draw(surface(T), ' +
                 'rgb{0}, '.format(str(color)) +
-                'render(compression = High, merge = true))' +
+                'render(compression = Low, merge = true))' +
                 ';\n')
     return asy_txt
 

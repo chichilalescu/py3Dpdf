@@ -1,4 +1,3 @@
-#! /usr/bin/env python2
 #######################################################################
 #                                                                     #
 #  Copyright 2014 Cristian C Lalescu                                  #
@@ -20,49 +19,22 @@
 #                                                                     #
 #######################################################################
 
+import os
+from pkg_resources import get_distribution, DistributionNotFound
 
-########################################################################
-#
-# some global settings
-#
-AUTHOR = 'Cristian C Lalescu'
-AUTHOR_EMAIL = ''
-#
-########################################################################
+try:
+    _dist = get_distribution('py3Dpdf')
+    # Normalize case for Windows systems
+    dist_loc = os.path.normcase(_dist.location)
+    here = os.path.normcase(__file__)
+    if not here.startswith(os.path.join(dist_loc, 'pyJHTDB')):
+        # not installed, but there is another version that *is*
+        raise DistributionNotFound
+except DistributionNotFound:
+    __version__ = 'Please install this project with setup.py'
+else:
+    __version__ = _dist.version
 
-
-
-########################################################################
-#
-# define version
-#
-import datetime
-now = datetime.datetime.now()
-date_name = '{0:0>4}{1:0>2}{2:0>2}'.format(now.year, now.month, now.day)
-VERSION = date_name
-#
-########################################################################
-
-
-
-from setuptools import setup
-setup(
-        name = 'py3Dpdf',
-        version = VERSION,
-        packages = ['py3Dpdf'],
-        install_requires = ['numpy>=1.9'],
-
-        #### package description stuff goes here
-        description = '3D PDF printing from python',
-        long_description = open('README.rst', 'r').read(),
-        author = AUTHOR,
-        author_email = AUTHOR_EMAIL,
-        license = 'GNU GPLv3',
-        classifiers = [
-            'Environment :: Console',
-            'Intended Audience :: Science/Research',
-            'Natural Language :: English',
-            'Programming Language :: Python'
-            ],
-        )
+from .mgl import *
+from .asy import *
 

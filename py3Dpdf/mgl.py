@@ -1,4 +1,3 @@
-#! /usr/bin/env python2
 #######################################################################
 #                                                                     #
 #  Copyright 2014 Cristian C Lalescu                                  #
@@ -20,49 +19,31 @@
 #                                                                     #
 #######################################################################
 
+import mathgl
+import numpy as np
 
-########################################################################
-#
-# some global settings
-#
-AUTHOR = 'Cristian C Lalescu'
-AUTHOR_EMAIL = ''
-#
-########################################################################
-
-
-
-########################################################################
-#
-# define version
-#
-import datetime
-now = datetime.datetime.now()
-date_name = '{0:0>4}{1:0>2}{2:0>2}'.format(now.year, now.month, now.day)
-VERSION = date_name
-#
-########################################################################
-
-
-
-from setuptools import setup
-setup(
-        name = 'py3Dpdf',
-        version = VERSION,
-        packages = ['py3Dpdf'],
-        install_requires = ['numpy>=1.9'],
-
-        #### package description stuff goes here
-        description = '3D PDF printing from python',
-        long_description = open('README.rst', 'r').read(),
-        author = AUTHOR,
-        author_email = AUTHOR_EMAIL,
-        license = 'GNU GPLv3',
-        classifiers = [
-            'Environment :: Console',
-            'Intended Audience :: Science/Research',
-            'Natural Language :: English',
-            'Programming Language :: Python'
-            ],
-        )
+def triangulated_surface_to_mglGraph(
+        graph = None,
+        points = None,
+        triangles = None,
+        color = 'r'):
+    npoints = points.shape[0]
+    ntriangles = triangles.shape[0]
+    uu = mathgl.mglData(npoints)
+    vv = mathgl.mglData(npoints)
+    ww = mathgl.mglData(npoints)
+    for i in range(npoints):
+        uu[i] = points[i, 0]
+        vv[i] = points[i, 1]
+        ww[i] = points[i, 2]
+    tt = mathgl.mglData(ntriangles*3)
+    for i in range(ntriangles):
+        for j in range(3):
+            tt[i*3 + j] = triangles[i, j]
+    tt.Rearrange(3, ntriangles)
+    graph.SetRange('x', uu, True)
+    graph.SetRange('y', vv, True)
+    graph.SetRange('z', ww, True)
+    graph.TriPlot(tt, uu, vv, ww, color)
+    return None
 

@@ -2,7 +2,7 @@
 *.asy
 build/*
 dist/*
-py2asy.egg-info/*
+py3Dpdf.egg-info/*
 .*.swp
 *.eps
 *.tex
