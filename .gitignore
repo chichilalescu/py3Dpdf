@@ -11,3 +11,4 @@ py3Dpdf.egg-info/*
 *.log
 *.aux
 *.out
+*.png
