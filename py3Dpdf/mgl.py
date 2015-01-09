@@ -47,7 +47,7 @@ def triangulated_surface_to_mglGraph(
     graph.TriPlot(tt, uu, vv, ww, color)
     return None
 
-def nparray_to_mglData(a):
+def array_to_mglData(a):
     aa = mathgl.mglData(a.size)
     b = a.reshape(-1)
     for i in range(b.size):
@@ -72,38 +72,39 @@ def rgb_to_mglColor(
 class npGraph(mathgl.mglGraph):
     def __init__(self):
         super(npGraph, self).__init__()
-        self.empty = True
         return None
     def triangulated_surface(
             self,
             points = None,
             triangles = None,
             style = 'r'):
-        uu = nparray_to_mglData(points[:, 0])
-        vv = nparray_to_mglData(points[:, 1])
-        ww = nparray_to_mglData(points[:, 2])
-        tt = nparray_to_mglData(triangles)
-        self.set_limits({'x': uu,
-                         'y': vv,
-                         'z': ww})
-        self.empty = False
+        uu = array_to_mglData(points[:, 0])
+        vv = array_to_mglData(points[:, 1])
+        ww = array_to_mglData(points[:, 2])
+        tt = array_to_mglData(triangles)
         return self.TriPlot(tt, uu, vv, ww, style)
     def curve(
             self,
             points = None,
             style = 'r'):
-        u = nparray_to_mglData(points[:, 0])
-        v = nparray_to_mglData(points[:, 1])
-        w = nparray_to_mglData(points[:, 2])
-        self.set_limits({'x': u,
-                         'y': v,
-                         'z': w})
-        self.empty = False
+        u = array_to_mglData(points[:, 0])
+        v = array_to_mglData(points[:, 1])
+        w = array_to_mglData(points[:, 2])
         return self.Plot(u, v, w, style)
     def set_limits(
             self,
-            points = {}):
+            points = {},
+            increase_only = False):
         for coord in points.keys():
-            self.SetRange(coord, points[coord], not self.empty)
+            if type(points[coord]) == type([]):
+                values = array_to_mglData(np.array(points[coord]))
+            elif type(points[coord]) == type(np.zeros(1)):
+                values = array_to_mglData(points[coord])
+            elif type(points[coord]) == type(mathgl.mglData(1)):
+                values = points[coord]
+            self.SetRange(
+                    coord,
+                    values,
+                    increase_only)
         return None
 
