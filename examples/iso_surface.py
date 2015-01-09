@@ -50,18 +50,24 @@ def main(
         y1Dgrid = grid1D,
         z1Dgrid = grid1D,
         values = [0.0])
-    asy_txt = py3Dpdf.triangulated_surface_to_asy(
-        data[0]['points'],
-        data[0]['triangles'])
-    py3Dpdf.asy_to_pdf(
-        asy_objects = [asy_txt],
-        figname = 'asy_iso_test')
-    gr = py3Dpdf.npGraph()
-    gr.triangulated_surface(
-        points = data[0]['points'],
-        triangles = data[0]['triangles'])
-    gr.WritePNG('mgl_iso_test.png')
-    gr.WritePRC('mgl_iso_test.prc')
+    if py3Dpdf.found_asymptote:
+        asy_txt = py3Dpdf.triangulated_surface_to_asy(
+            data[0]['points'],
+            data[0]['triangles'])
+        py3Dpdf.asy_to_pdf(
+            asy_objects = [asy_txt],
+            figname = 'asy_iso_test')
+    if py3Dpdf.found_mathgl:
+        gr = py3Dpdf.npGraph()
+        gr.set_limits(
+            points = {'x':py3Dpdf.nparray_to_mglData(grid1D),
+                      'y':py3Dpdf.nparray_to_mglData(grid1D),
+                      'z':py3Dpdf.nparray_to_mglData(grid1D)})
+        gr.triangulated_surface(
+            points = data[0]['points'],
+            triangles = data[0]['triangles'])
+        gr.WritePNG('mgl_iso_test.png')
+        gr.WritePRC('mgl_iso_test.prc')
     return None
 
 if __name__ == '__main__':

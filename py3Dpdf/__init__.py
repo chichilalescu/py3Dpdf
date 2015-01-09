@@ -35,6 +35,12 @@ except DistributionNotFound:
 else:
     __version__ = _dist.version
 
-from .mgl import *
-from .asy import *
+found_mathgl = True
+found_asymptote = False
+
+if found_mathgl:
+    from .mgl import *
+
+if found_asymptote:
+    from .asy import *
 
