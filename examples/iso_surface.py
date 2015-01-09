@@ -1,3 +1,4 @@
+#! /usr/bin/env python2
 #######################################################################
 #                                                                     #
 #  Copyright 2014 Cristian C Lalescu                                  #
@@ -19,10 +20,7 @@
 #                                                                     #
 #######################################################################
 
-#! /usr/bin/env python2
-
 import numpy as np
-import mathgl
 import py3Dpdf
 import py3Dpdf.tvtk_tools
 
@@ -58,9 +56,8 @@ def main(
     py3Dpdf.asy_to_pdf(
         asy_objects = [asy_txt],
         figname = 'asy_iso_test')
-    gr = mathgl.mglGraph()
-    py3Dpdf.triangulated_surface_to_mglGraph(
-        graph = gr,
+    gr = py3Dpdf.npGraph()
+    gr.triangulated_surface(
         points = data[0]['points'],
         triangles = data[0]['triangles'])
     gr.WritePNG('mgl_iso_test.png')
