@@ -1,3 +1,4 @@
+#! /usr/bin/env python2
 #######################################################################
 #                                                                     #
 #  Copyright 2014 Cristian C Lalescu                                  #
@@ -18,8 +19,6 @@
 #  along with py3Dpdf.  If not, see <http://www.gnu.org/licenses/>    #
 #                                                                     #
 #######################################################################
-
-#! /usr/bin/env python2
 
 import numpy as np
 import py3Dpdf
