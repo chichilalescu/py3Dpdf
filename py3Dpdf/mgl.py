@@ -107,4 +107,7 @@ class npGraph(mathgl.mglGraph):
                     values,
                     increase_only)
         return None
+    def correct_aspect(self):
+        self.Aspect(1., 1., 1.)
+        return None
 
