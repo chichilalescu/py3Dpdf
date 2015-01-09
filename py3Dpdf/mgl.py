@@ -59,6 +59,10 @@ def nparray_to_mglData(a):
         aa.Rearrange(*a.shape[::-1])
     return aa
 
+def rgb_to_mglColor(rgb = (1, 0, 0)):
+    # see http://mathgl.sourceforge.net/doc_en/Line-styles.html#index-Arrows for details
+    return '{{x{0:0>2x}{1:0>2x}{2:0>2x}}}'.format(int(rgb[0]*255),int(rgb[1]*255), int(rgb[2]*255))
+
 class npGraph(mathgl.mglGraph):
     def __init__(self):
         super(npGraph, self).__init__()
@@ -68,7 +72,7 @@ class npGraph(mathgl.mglGraph):
             self,
             points = None,
             triangles = None,
-            color = 'r'):
+            style = 'r'):
         uu = nparray_to_mglData(points[:, 0])
         vv = nparray_to_mglData(points[:, 1])
         ww = nparray_to_mglData(points[:, 2])
@@ -77,11 +81,11 @@ class npGraph(mathgl.mglGraph):
                          'y': vv,
                          'z': ww})
         self.empty = False
-        return self.TriPlot(tt, uu, vv, ww, color)
+        return self.TriPlot(tt, uu, vv, ww, style)
     def curve(
             self,
             points = None,
-            color = 'r'):
+            style = 'r'):
         u = nparray_to_mglData(points[:, 0])
         v = nparray_to_mglData(points[:, 1])
         w = nparray_to_mglData(points[:, 2])
@@ -89,7 +93,7 @@ class npGraph(mathgl.mglGraph):
                          'y': v,
                          'z': w})
         self.empty = False
-        return self.Plot(u, v, w, color)
+        return self.Plot(u, v, w, style)
     def set_limits(
             self,
             points = {}):

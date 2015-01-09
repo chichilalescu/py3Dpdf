@@ -37,7 +37,9 @@ def main():
     g = py3Dpdf.npGraph()
     for i in range(W.shape[1]):
         asy_curves.append(py3Dpdf.curve3D_to_asy(W[:, i], arrow_on = True))
-        g.curve(W[:, i])
+        g.curve(
+            W[:, i],
+            style = py3Dpdf.rgb_to_mglColor(rgb = (0.3, 0.1, 0.9)) + 'A')
     py3Dpdf.asy_to_pdf(
         asy_objects = asy_curves,
         figname = 'asy_wp_test')
