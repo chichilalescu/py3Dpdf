@@ -50,7 +50,7 @@ setup(
         name = 'py3Dpdf',
         version = VERSION,
         packages = ['py3Dpdf'],
-        install_requires = ['numpy>=1.9'],
+        install_requires = ['numpy>=1.8'],
 
         #### package description stuff goes here
         description = '3D PDF printing from python',
