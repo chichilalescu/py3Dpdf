@@ -33,18 +33,28 @@ def get_wiener_paths(
 
 def main():
     W = get_wiener_paths()
-    asy_curves = []
-    g = py3Dpdf.npGraph()
+    if py3Dpdf.found_asymptote:
+        asy_curves = []
+    if py3Dpdf.found_mathgl:
+        g = py3Dpdf.npGraph()
+        g.set_limits(points = {'x': [W[..., 0].min(), W[..., 0].max()],
+                               'y': [W[..., 1].min(), W[..., 1].max()],
+                               'z': [W[..., 2].min(), W[..., 2].max()]})
     for i in range(W.shape[1]):
-        asy_curves.append(py3Dpdf.curve3D_to_asy(W[:, i], arrow_on = True))
-        g.curve(
-            W[:, i],
-            style = py3Dpdf.rgb_to_mglColor(rgb = (0.3, 0.1, 0.9)) + 'A')
-    py3Dpdf.asy_to_pdf(
-        asy_objects = asy_curves,
-        figname = 'asy_wp_test')
-    g.WritePNG('mgl_wp_test.png')
-    g.WritePRC('mgl_wp_test.prc')
+        if py3Dpdf.found_asymptote:
+            asy_curves.append(py3Dpdf.curve3D_to_asy(W[:, i], arrow_on = True))
+        if py3Dpdf.found_mathgl:
+            g.curve(
+                W[:, i],
+                style = (py3Dpdf.rgb_to_mglColor(0.3, 0.1, 0.9) +
+                         'A'))
+    if py3Dpdf.found_asymptote:
+        py3Dpdf.asy_to_pdf(
+            asy_objects = asy_curves,
+            figname = 'asy_wp_test')
+    if py3Dpdf.found_mathgl:
+        g.WritePNG('mgl_wp_test.png')
+        g.WritePRC('mgl_wp_test.prc')
     return None
 
 if __name__ == '__main__':
