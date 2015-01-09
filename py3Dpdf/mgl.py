@@ -47,6 +47,18 @@ def triangulated_surface_to_mglGraph(
     graph.TriPlot(tt, uu, vv, ww, color)
     return None
 
+def nparray_to_mglData(a):
+    aa = mathgl.mglData(a.size)
+    b = a.reshape(-1)
+    for i in range(b.size):
+        aa[i] = b[i]
+    if len(a.shape) > 1:
+        #  I'm not sure this makes sense for many dimensions,
+        # but this is what I need to do for the triangles, so
+        # I'll worry about the general case later.
+        aa.Rearrange(*a.shape[::-1])
+    return aa
+
 class npGraph(mathgl.mglGraph):
     def __init__(self):
         super(npGraph, self).__init__()
@@ -57,28 +69,31 @@ class npGraph(mathgl.mglGraph):
             points = None,
             triangles = None,
             color = 'r'):
-        npoints = points.shape[0]
-        ntriangles = triangles.shape[0]
-        uu = mathgl.mglData(npoints)
-        vv = mathgl.mglData(npoints)
-        ww = mathgl.mglData(npoints)
-        for i in range(npoints):
-            uu[i] = points[i, 0]
-            vv[i] = points[i, 1]
-            ww[i] = points[i, 2]
-        tt = mathgl.mglData(ntriangles*3)
-        for i in range(ntriangles):
-            for j in range(3):
-                tt[i*3 + j] = triangles[i, j]
-        tt.Rearrange(3, ntriangles)
-        if not self.empty:
-            self.SetRange('x', uu, True)
-            self.SetRange('y', vv, True)
-            self.SetRange('z', ww, True)
-        else:
-            self.SetRange('x', uu)
-            self.SetRange('y', vv)
-            self.SetRange('z', ww)
-            self.empty = False
+        uu = nparray_to_mglData(points[:, 0])
+        vv = nparray_to_mglData(points[:, 1])
+        ww = nparray_to_mglData(points[:, 2])
+        tt = nparray_to_mglData(triangles)
+        self.set_limits({'x': uu,
+                         'y': vv,
+                         'z': ww})
+        self.empty = False
         return self.TriPlot(tt, uu, vv, ww, color)
+    def curve(
+            self,
+            points = None,
+            color = 'r'):
+        u = nparray_to_mglData(points[:, 0])
+        v = nparray_to_mglData(points[:, 1])
+        w = nparray_to_mglData(points[:, 2])
+        self.set_limits({'x': u,
+                         'y': v,
+                         'z': w})
+        self.empty = False
+        return self.Plot(uu, vv, ww, color)
+    def set_limits(
+            self,
+            points = {}):
+        for coord in points.keys():
+            self.SetRange(coord, points[coord], not self.empty)
+        return None
 
