@@ -89,7 +89,7 @@ class npGraph(mathgl.mglGraph):
                          'y': v,
                          'z': w})
         self.empty = False
-        return self.Plot(uu, vv, ww, color)
+        return self.Plot(u, v, w, color)
     def set_limits(
             self,
             points = {}):

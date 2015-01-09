@@ -34,9 +34,15 @@ def get_wiener_paths(
 def main():
     W = get_wiener_paths()
     asy_curves = []
+    g = py3Dpdf.npGraph()
     for i in range(W.shape[1]):
         asy_curves.append(py3Dpdf.curve3D_to_asy(W[:, i], arrow_on = True))
-    py3Dpdf.asy_to_pdf(asy_objects = asy_curves)
+        g.curve(W[:, i])
+    py3Dpdf.asy_to_pdf(
+        asy_objects = asy_curves,
+        figname = 'asy_wp_test')
+    g.WritePNG('mgl_wp_test.png')
+    g.WritePRC('mgl_wp_test.prc')
     return None
 
 if __name__ == '__main__':
