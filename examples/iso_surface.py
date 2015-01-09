@@ -60,9 +60,9 @@ def main(
     if py3Dpdf.found_mathgl:
         gr = py3Dpdf.npGraph()
         gr.set_limits(
-            points = {'x':py3Dpdf.nparray_to_mglData(grid1D),
-                      'y':py3Dpdf.nparray_to_mglData(grid1D),
-                      'z':py3Dpdf.nparray_to_mglData(grid1D)})
+            points = {'x': grid1D,
+                      'y': grid1D,
+                      'z': grid1D})
         gr.triangulated_surface(
             points = data[0]['points'],
             triangles = data[0]['triangles'])
