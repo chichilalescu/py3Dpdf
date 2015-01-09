@@ -51,7 +51,7 @@ def nparray_to_mglData(a):
     aa = mathgl.mglData(a.size)
     b = a.reshape(-1)
     for i in range(b.size):
-        aa[i] = b[i]
+        aa[i] = float(b[i])
     if len(a.shape) > 1:
         #  I'm not sure this makes sense for many dimensions,
         # but this is what I need to do for the triangles, so
@@ -59,7 +59,13 @@ def nparray_to_mglData(a):
         aa.Rearrange(*a.shape[::-1])
     return aa
 
-def rgb_to_mglColor(rgb = (1, 0, 0)):
+def rgb_to_mglColor(
+        r = 1,
+        g = 0,
+        b = 0,
+        rgb = None):
+    if type(rgb) == type(None):
+        rgb = (r, g, b)
     # see http://mathgl.sourceforge.net/doc_en/Line-styles.html#index-Arrows for details
     return '{{x{0:0>2x}{1:0>2x}{2:0>2x}}}'.format(int(rgb[0]*255),int(rgb[1]*255), int(rgb[2]*255))
 
