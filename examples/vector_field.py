@@ -40,7 +40,14 @@ def main():
         -np.pi, np.pi,
         fx.shape[0],
         endpoint = False)
+    data = py3Dpdf.tvtk_tools.get_isosurface_data(
+        field = fx,
+        x1Dgrid = grid1D,
+        y1Dgrid = grid1D,
+        z1Dgrid = grid1D,
+        values = [0.0])
     if py3Dpdf.found_mathgl:
+        # first, vector field
         gr = py3Dpdf.npGraph()
         gr.set_limits(
             points = {'x': grid1D,
@@ -62,10 +69,28 @@ def main():
                 ffy,
                 ffz,
                 '<',
-                "legend 'ha ha'; meshnum 8")
+                "value 1; meshnum 8")
         gr.Legend()
         gr.WritePNG('mgl_vect_test.png')
         gr.WritePRC('mgl_vect_test.prc')
+        # second, isosurface with normals
+        gr.Clf()
+        gr.triangulated_surface(
+            points = data[0]['points'],
+            triangles = data[0]['triangles'])
+        mglcx   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 0])
+        mglcy   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 1])
+        mglcz   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 2])
+        mglgx   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 0])
+        mglgy   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 1])
+        mglgz   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 2])
+        gr.Traj(
+            mglcx, mglcy, mglcz,
+            mglgx, mglgy, mglgz,
+            '<',
+            "value 0.1")
+        gr.WritePNG('mgl_traj_test.png')
+        gr.WritePRC('mgl_traj_test.prc')
     return None
 
 if __name__ == '__main__':
