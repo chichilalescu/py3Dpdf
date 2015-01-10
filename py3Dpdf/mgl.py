@@ -22,32 +22,7 @@
 import mathgl
 import numpy as np
 
-def triangulated_surface_to_mglGraph(
-        graph = None,
-        points = None,
-        triangles = None,
-        color = 'r'):
-    npoints = points.shape[0]
-    ntriangles = triangles.shape[0]
-    uu = mathgl.mglData(npoints)
-    vv = mathgl.mglData(npoints)
-    ww = mathgl.mglData(npoints)
-    for i in range(npoints):
-        uu[i] = points[i, 0]
-        vv[i] = points[i, 1]
-        ww[i] = points[i, 2]
-    tt = mathgl.mglData(ntriangles*3)
-    for i in range(ntriangles):
-        for j in range(3):
-            tt[i*3 + j] = triangles[i, j]
-    tt.Rearrange(3, ntriangles)
-    graph.SetRange('x', uu, True)
-    graph.SetRange('y', vv, True)
-    graph.SetRange('z', ww, True)
-    graph.TriPlot(tt, uu, vv, ww, color)
-    return None
-
-def nparray_to_mglData(a):
+def array_to_mglData(a):
     aa = mathgl.mglData(a.size)
     b = a.reshape(-1)
     for i in range(b.size):
@@ -70,40 +45,87 @@ def rgb_to_mglColor(
     return '{{x{0:0>2x}{1:0>2x}{2:0>2x}}}'.format(int(rgb[0]*255),int(rgb[1]*255), int(rgb[2]*255))
 
 class npGraph(mathgl.mglGraph):
-    def __init__(self):
+    def __init__(
+            self,
+            size = (2**10, 2**10)):
         super(npGraph, self).__init__()
-        self.empty = True
+        self.SetSize(*size)
+        self.Light(True)
         return None
     def triangulated_surface(
             self,
             points = None,
             triangles = None,
             style = 'r'):
-        uu = nparray_to_mglData(points[:, 0])
-        vv = nparray_to_mglData(points[:, 1])
-        ww = nparray_to_mglData(points[:, 2])
-        tt = nparray_to_mglData(triangles)
-        self.set_limits({'x': uu,
-                         'y': vv,
-                         'z': ww})
-        self.empty = False
+        uu = array_to_mglData(points[:, 0])
+        vv = array_to_mglData(points[:, 1])
+        ww = array_to_mglData(points[:, 2])
+        tt = array_to_mglData(triangles)
         return self.TriPlot(tt, uu, vv, ww, style)
     def curve(
             self,
             points = None,
             style = 'r'):
-        u = nparray_to_mglData(points[:, 0])
-        v = nparray_to_mglData(points[:, 1])
-        w = nparray_to_mglData(points[:, 2])
-        self.set_limits({'x': u,
-                         'y': v,
-                         'z': w})
-        self.empty = False
+        u = array_to_mglData(points[:, 0])
+        v = array_to_mglData(points[:, 1])
+        w = array_to_mglData(points[:, 2])
         return self.Plot(u, v, w, style)
+    def vector_field(
+            self,
+            points = None,
+            vectors = None,
+            style = 'b<',
+            options = {}):
+        extra_options = {'value' : 1}
+        extra_options.update(options)
+        if vectors.shape[-1] != 3:
+            print('vectors sent to npGraph.vector_field should have the last dimension 3. ' +
+                  'exiting without doing anything.')
+            return None
+        opt_keys = list(extra_options.keys())
+        opt_string = '{0} {1}'.format(
+            opt_keys[0],
+            extra_options[opt_keys[0]])
+        for k in opt_keys[1:]:
+            opt_string += '; {0} {1}'.format(k, extra_options[k])
+        mglvx = array_to_mglData(vectors[..., 0])
+        mglvy = array_to_mglData(vectors[..., 1])
+        mglvz = array_to_mglData(vectors[..., 2])
+        if type(points) == type(None):
+            return self.Vect(
+                mglvx, mglvy, mglvz,
+                style,
+                opt_string)
+        else:
+            mglrx = array_to_mglData(points[..., 0])
+            mglry = array_to_mglData(points[..., 1])
+            mglrz = array_to_mglData(points[..., 2])
+            if 'meshnum' in opt_keys:
+                return self.Vect(
+                    mglrx, mglry, mglrz,
+                    mglvx, mglvy, mglvz,
+                    style,
+                    opt_string)
+            else:
+                return self.Traj(
+                    mglrx, mglry, mglrz,
+                    mglvx, mglvy, mglvz,
+                    style,
+                    opt_string)
     def set_limits(
             self,
-            points = {}):
+            points = {},
+            increase_only = False):
         for coord in points.keys():
-            self.SetRange(coord, points[coord], not self.empty)
+            if type(points[coord]) == type([]):
+                values = array_to_mglData(np.array(points[coord]))
+            elif type(points[coord]) == type(np.zeros(1)):
+                values = array_to_mglData(points[coord])
+            elif type(points[coord]) == type(mathgl.mglData(1)):
+                values = points[coord]
+            self.SetRange(
+                    coord,
+                    values,
+                    increase_only)
         return None
 

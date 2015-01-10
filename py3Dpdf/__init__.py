@@ -35,6 +35,21 @@ except DistributionNotFound:
 else:
     __version__ = _dist.version
 
-from .mgl import *
-from .asy import *
+# check if asymptote is installed
+import distutils.spawn
+asymptote_exe = distutils.spawn.find_executable('asy')
+found_asymptote = not (asymptote_exe == None)
+
+try:
+    import mathgl
+    found_mathgl = True
+except ImportError:
+    found_mathgl = False
+    print('mathgl not found. mgl submodule won\'t work.')
+
+if found_mathgl:
+    from .mgl import *
+
+if found_asymptote:
+    from .asy import *
 
