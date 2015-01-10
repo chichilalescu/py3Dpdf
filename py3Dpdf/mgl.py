@@ -70,6 +70,48 @@ class npGraph(mathgl.mglGraph):
         v = array_to_mglData(points[:, 1])
         w = array_to_mglData(points[:, 2])
         return self.Plot(u, v, w, style)
+    def vector_field(
+            self,
+            points = None,
+            vectors = None,
+            style = 'b<',
+            options = {}):
+        extra_options = {'value' : 1}
+        extra_options.update(options)
+        if vectors.shape[-1] != 3:
+            print('vectors sent to npGraph.vector_field should have the last dimension 3. ' +
+                  'exiting without doing anything.')
+            return None
+        opt_keys = list(extra_options.keys())
+        opt_string = '{0} {1}'.format(
+            opt_keys[0],
+            extra_options[opt_keys[0]])
+        for k in opt_keys[1:]:
+            opt_string += '; {0} {1}'.format(k, extra_options[k])
+        mglvx = array_to_mglData(vectors[..., 0])
+        mglvy = array_to_mglData(vectors[..., 1])
+        mglvz = array_to_mglData(vectors[..., 2])
+        if type(points) == type(None):
+            return self.Vect(
+                mglvx, mglvy, mglvz,
+                style,
+                opt_string)
+        else:
+            mglrx = array_to_mglData(points[..., 0])
+            mglry = array_to_mglData(points[..., 1])
+            mglrz = array_to_mglData(points[..., 2])
+            if 'meshnum' in opt_keys:
+                return self.Vect(
+                    mglrx, mglry, mglrz,
+                    mglvx, mglvy, mglvz,
+                    style,
+                    opt_string)
+            else:
+                return self.Traj(
+                    mglrx, mglry, mglrz,
+                    mglvx, mglvy, mglvz,
+                    style,
+                    opt_string)
     def set_limits(
             self,
             points = {},
@@ -85,8 +127,5 @@ class npGraph(mathgl.mglGraph):
                     coord,
                     values,
                     increase_only)
-        return None
-    def correct_aspect(self):
-        self.Aspect(1., 1., 1.)
         return None
 
