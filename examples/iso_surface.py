@@ -63,6 +63,7 @@ def main(
             points = {'x': grid1D,
                       'y': grid1D,
                       'z': grid1D})
+        gr.Light(True)
         gr.triangulated_surface(
             points = data[0]['points'],
             triangles = data[0]['triangles'])
