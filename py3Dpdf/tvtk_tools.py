@@ -48,6 +48,58 @@ def get_isosurface_data(
               'triangles' : np.reshape(
                       iso.output.polys.data.to_array(),
                       (-1, 4))[:, 1:].copy()}
+        ### this gets the centers of the faces
+        rx = np.average(ip['points'][ip['triangles'], 0], axis = 1)
+        ry = np.average(ip['points'][ip['triangles'], 1], axis = 1)
+        rz = np.average(ip['points'][ip['triangles'], 2], axis = 1)
+
+        ip['centers'] = np.vstack([rx, ry, rz]).T.copy()
+        del rx, ry, rz
+        ### now get normals
+        ###
+        # compute area of triangles
+        ###
+
+        edge1 = (ip['points'][ip['triangles'][:, 1], :] -
+                 ip['points'][ip['triangles'][:, 0], :])
+        edge2 = (ip['points'][ip['triangles'][:, 2], :] -
+                 ip['points'][ip['triangles'][:, 0], :])
+
+        NF = edge1.copy()
+
+        #cross product
+        NF[:, 0] = edge1[:, 1]*edge2[:, 2] - edge1[:, 2]*edge2[:, 1]
+        NF[:, 1] = edge1[:, 2]*edge2[:, 0] - edge1[:, 0]*edge2[:, 2]
+        NF[:, 2] = edge1[:, 0]*edge2[:, 1] - edge1[:, 1]*edge2[:, 0]
+
+        dA = (np.sum(NF**2, axis = 1)**.5)
+        NF /= dA[:, None]
+        ip['areas'] = dA/2
+
+        NF[np.where(np.isnan(NF))] = 0.0
+        # gradients are supposed to point towards increasing values.
+        # TODO: make sure the following line is always correct.
+        ip['gradients'] = -NF
         data.append(ip)
     return data
+
+def get_neighbours(
+        data,
+        function = None):
+    ## apparently there is a get_cell_neighbors defined in vtk,
+    ## but I have no idea how to use it
+    if type(function) == type(None):
+        function = [True for c in range(data['centers'].shape[0])]
+    good_centers = np.where(function)[0]
+    data['neighbours'] = [set([])
+                          for c in range(data['centers'].shape[0])]
+    point_triangles = [set([]) for p in range(data['points'].shape[0])]
+    for c in good_centers:
+        for p in data['triangles'][c]:
+            point_triangles[p].add(c)
+    for c in good_centers:
+        for p in data['triangles'][c]:
+            data['neighbours'][c].update(point_triangles[p])
+        data['neighbours'][c].remove(c)
+    return None
 
