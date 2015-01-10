@@ -47,50 +47,41 @@ def main():
         z1Dgrid = grid1D,
         values = [0.0])
     if py3Dpdf.found_mathgl:
-        # first, vector field
+        # first, vector field on grid
         gr = py3Dpdf.npGraph()
         gr.set_limits(
             points = {'x': grid1D,
                       'y': grid1D,
                       'z': grid1D})
-        mglgrid = py3Dpdf.array_to_mglData(grid1D)
-        ffx = py3Dpdf.array_to_mglData(fx)
-        ffy = py3Dpdf.array_to_mglData(fy)
-        ffz = py3Dpdf.array_to_mglData(fz)
         gr.Axis('xyz')
         gr.Box()
         gr.Label('x', 'x', 0)
         gr.Label('y', 'y', 0)
         gr.Label('z', 'z', 0)
-        gr.Vect(mglgrid,
-                mglgrid,
-                mglgrid,
-                ffx,
-                ffy,
-                ffz,
-                '<',
-                "value 1; meshnum 8")
+        gr.vector_field(
+            points = np.transpose(
+                np.array([x, y, z]),
+                axes = [1, 2, 3, 0]),
+            vectors = np.transpose(
+                np.array([fx, fy, fz]),
+                axes = [1, 2, 3, 0]),
+            style = '<',
+            options = {'meshnum': 8})
         gr.Legend()
-        gr.WritePNG('mgl_vect_test.png')
-        gr.WritePRC('mgl_vect_test.prc')
+        gr.WritePNG('mgl_grid_vec_test.png')
+        gr.WritePRC('mgl_grid_vec_test.prc')
         # second, isosurface with normals
         gr.Clf()
         gr.triangulated_surface(
             points = data[0]['points'],
             triangles = data[0]['triangles'])
-        mglcx   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 0])
-        mglcy   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 1])
-        mglcz   = py3Dpdf.array_to_mglData(data[0]['centers'][:, 2])
-        mglgx   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 0])
-        mglgy   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 1])
-        mglgz   = py3Dpdf.array_to_mglData(data[0]['gradients'][:, 2])
-        gr.Traj(
-            mglcx, mglcy, mglcz,
-            mglgx, mglgy, mglgz,
-            '<',
-            "value 0.1")
-        gr.WritePNG('mgl_traj_test.png')
-        gr.WritePRC('mgl_traj_test.prc')
+        gr.vector_field(
+            points  = data[0]['centers'],
+            vectors = data[0]['gradients'],
+            style = 'g<',
+            options = {'value'  : 0.1})
+        gr.WritePNG('mgl_vec_test.png')
+        gr.WritePRC('mgl_vec_test.prc')
     return None
 
 if __name__ == '__main__':
