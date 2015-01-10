@@ -50,7 +50,6 @@ def main():
         ffx = py3Dpdf.array_to_mglData(fx)
         ffy = py3Dpdf.array_to_mglData(fy)
         ffz = py3Dpdf.array_to_mglData(fz)
-        gr.SetSize(2**10, 2**10)
         gr.Axis('xyz')
         gr.Box()
         gr.Label('x', 'x', 0)

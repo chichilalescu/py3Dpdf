@@ -70,8 +70,11 @@ def rgb_to_mglColor(
     return '{{x{0:0>2x}{1:0>2x}{2:0>2x}}}'.format(int(rgb[0]*255),int(rgb[1]*255), int(rgb[2]*255))
 
 class npGraph(mathgl.mglGraph):
-    def __init__(self):
+    def __init__(
+            self,
+            size = (2**10, 2**10)):
         super(npGraph, self).__init__()
+        self.SetSize(*size)
         return None
     def triangulated_surface(
             self,
