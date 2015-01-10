@@ -33,9 +33,6 @@ def main():
     fx /= 10
     fy /= 10
     fz /= 10
-    #fx[:] = 0
-    #fy[:] = x
-    #fz[:] = 0
     grid1D = np.linspace(
         -np.pi, np.pi,
         fx.shape[0],
