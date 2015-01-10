@@ -24,25 +24,12 @@ import numpy as np
 import py3Dpdf
 import py3Dpdf.tvtk_tools
 
+from base import get_turbulent_scalar
+
 def main(
         n = 32,
         kmax = None):
-    z, y, x = np.mgrid[
-        -np.pi:np.pi:n*1j,
-        -np.pi:np.pi:n*1j,
-        -np.pi:np.pi:n*1j]
-    if type(kmax) == type(None):
-        kmax = int(n/16)
-    a = np.random.randn(2*kmax+1, 2*kmax+1, kmax+1)
-    b = np.random.randn(2*kmax+1, 2*kmax+1, kmax+1)
-    a[0, 0, 0] = 0.0
-    f = np.zeros(x.shape, x.dtype)
-    for k in range(2*kmax+1):
-        for j in range(2*kmax+1):
-            for i in range(kmax+1):
-                f += ((a[k, j, i]*np.cos(i*x + (j-kmax)*y + (k-kmax)*z) +
-                       b[k, j, i]*np.sin(i*x + (j-kmax)*y + (k-kmax)*z)) /
-                      (i**2 + j**2 + k**2 + 1)**.75)
+    x, y, z, f = get_turbulent_scalar(n = n)
     grid1D = np.linspace(-np.pi, np.pi, n, endpoint = False)
     data = py3Dpdf.tvtk_tools.get_isosurface_data(
         field = f,
