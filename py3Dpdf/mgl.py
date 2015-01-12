@@ -56,12 +56,17 @@ class npGraph(mathgl.mglGraph):
             self,
             points = None,
             triangles = None,
+            scalars = None,
             style = 'r'):
         uu = array_to_mglData(points[:, 0])
         vv = array_to_mglData(points[:, 1])
         ww = array_to_mglData(points[:, 2])
         tt = array_to_mglData(triangles)
-        return self.TriPlot(tt, uu, vv, ww, style)
+        if type(scalars) == type(None):
+            return self.TriPlot(tt, uu, vv, ww, style)
+        else:
+            ss = array_to_mglData(scalars)
+            return self.TriPlot(tt, uu, vv, ww, ss, style)
     def curve(
             self,
             points = None,
