@@ -24,12 +24,15 @@ import numpy as np
 import py3Dpdf
 import py3Dpdf.tvtk_tools
 
+from scipy.interpolate import interpn
+
 from base import get_turbulent_scalar
 
 def main(
         n = 32,
         kmax = None):
     x, y, z, f = get_turbulent_scalar(n = n)
+    s = get_turbulent_scalar(n = n)[3]
     grid1D = np.linspace(-np.pi, np.pi, n, endpoint = False)
     data = py3Dpdf.tvtk_tools.get_isosurface_data(
         field = f,
@@ -37,6 +40,12 @@ def main(
         y1Dgrid = grid1D,
         z1Dgrid = grid1D,
         values = [0.0])
+    scals = interpn(
+        (grid1D, grid1D, grid1D),
+        s,
+        data[0]['points'],
+        bounds_error = False,
+        fill_value = 0.0)
     if py3Dpdf.found_asymptote:
         asy_txt = py3Dpdf.triangulated_surface_to_asy(
             data[0]['points'],
@@ -53,7 +62,10 @@ def main(
         gr.Light(True)
         gr.triangulated_surface(
             points = data[0]['points'],
-            triangles = data[0]['triangles'])
+            triangles = data[0]['triangles'],
+            scalars = scals,
+            values = np.linspace(scals.min(), scals.max(), 20),
+            style = '')
         gr.WritePNG('mgl_iso_test.png')
         gr.WritePRC('mgl_iso_test.prc')
     return None

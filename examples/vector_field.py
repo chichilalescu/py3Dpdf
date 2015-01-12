@@ -30,9 +30,6 @@ def main():
     fx = get_turbulent_scalar()[3]
     fy = get_turbulent_scalar()[3]
     x, y, z, fz = get_turbulent_scalar()
-    fx /= 10
-    fy /= 10
-    fz /= 10
     grid1D = np.linspace(
         -np.pi, np.pi,
         fx.shape[0],
@@ -71,7 +68,8 @@ def main():
         gr.Clf()
         gr.triangulated_surface(
             points = data[0]['points'],
-            triangles = data[0]['triangles'])
+            triangles = data[0]['triangles'],
+            style = 'r')
         gr.vector_field(
             points  = data[0]['centers'],
             vectors = data[0]['gradients'],
