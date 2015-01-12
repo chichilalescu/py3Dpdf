@@ -23,15 +23,8 @@ import mathgl
 import numpy as np
 
 def array_to_mglData(a):
-    aa = mathgl.mglData(a.size)
-    b = a.reshape(-1)
-    for i in range(b.size):
-        aa[i] = float(b[i])
-    if len(a.shape) > 1:
-        #  I'm not sure this makes sense for many dimensions,
-        # but this is what I need to do for the triangles, so
-        # I'll worry about the general case later.
-        aa.Rearrange(*a.shape[::-1])
+    aa = mathgl.mglData(a.reshape(1, -1))
+    aa.Rearrange(*a.shape[::-1])
     return aa
 
 def rgb_to_mglColor(
