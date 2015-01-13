@@ -23,15 +23,8 @@ import mathgl
 import numpy as np
 
 def array_to_mglData(a):
-    aa = mathgl.mglData(a.size)
-    b = a.reshape(-1)
-    for i in range(b.size):
-        aa[i] = float(b[i])
-    if len(a.shape) > 1:
-        #  I'm not sure this makes sense for many dimensions,
-        # but this is what I need to do for the triangles, so
-        # I'll worry about the general case later.
-        aa.Rearrange(*a.shape[::-1])
+    aa = mathgl.mglData(a.reshape(1, -1))
+    aa.Rearrange(*a.shape[::-1])
     return aa
 
 def rgb_to_mglColor(
@@ -56,12 +49,23 @@ class npGraph(mathgl.mglGraph):
             self,
             points = None,
             triangles = None,
+            scalars = None,
+            values = None,
             style = 'r'):
         uu = array_to_mglData(points[:, 0])
         vv = array_to_mglData(points[:, 1])
         ww = array_to_mglData(points[:, 2])
         tt = array_to_mglData(triangles)
-        return self.TriPlot(tt, uu, vv, ww, style)
+        if type(scalars) == type(None):
+            return self.TriPlot(tt, uu, vv, ww, style)
+        else:
+            ss = array_to_mglData(scalars)
+            if type(values) == type(None):
+                return self.TriPlot(tt, uu, vv, ww, ss, style)
+            else:
+                vals = array_to_mglData(values)
+                self.TriPlot(tt, uu, vv, ww, style)
+                return self.TriCont(vals, tt, uu, vv, ww, ss, style)
     def curve(
             self,
             points = None,
