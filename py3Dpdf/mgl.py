@@ -64,7 +64,6 @@ class npGraph(mathgl.mglGraph):
                 return self.TriPlot(tt, uu, vv, ww, ss, style)
             else:
                 vals = array_to_mglData(values)
-                self.TriPlot(tt, uu, vv, ww, style)
                 return self.TriCont(vals, tt, uu, vv, ww, ss, style)
     def curve(
             self,
