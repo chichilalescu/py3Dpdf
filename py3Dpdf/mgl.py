@@ -131,4 +131,31 @@ class npGraph(mathgl.mglGraph):
                     values,
                     increase_only)
         return None
+    def plot_coord_system(
+            self,
+            xmin, xmax,
+            ymin, ymax,
+            zmin, zmax,
+            set_size = True):
+        if set_size:
+            maxsize = max(xmax - xmin,
+                          ymax - ymin,
+                          zmax - zmin)*1.01
+            self.set_limits(
+                points = {'x' : [(xmin + xmax)/2 - maxsize/2,
+                                 (xmin + xmax)/2 + maxsize/2],
+                          'y' : [(ymin + ymax)/2 - maxsize/2,
+                                 (ymin + ymax)/2 + maxsize/2],
+                          'z' : [(zmin + zmax)/2 - maxsize/2,
+                                 (zmin + zmax)/2 + maxsize/2]})
+        self.curve(np.array([[xmin, ymin, zmin],
+                             [xmax, ymin, zmin]]),
+                   style = 'r')
+        self.curve(np.array([[xmin, ymin, zmin],
+                             [xmin, ymax, zmin]]),
+                   style = 'g')
+        self.curve(np.array([[xmin, ymin, zmin],
+                             [xmin, ymin, zmax]]),
+                   style = 'b')
+        return None
 
