@@ -50,6 +50,36 @@ def curve3D_to_asy(
                 ';\n')
     return asy_txt
 
+def plot3D_to_asy(
+        points,
+        color = (1, 0, 0),
+        arrow_on = False,
+        spline_on = False,
+        line_on = True,
+        points_on = False):
+    # vertices
+    asy_txt = 'path3 p=' + str(tuple(points[0]))
+    # store points
+    connector = '--'
+    if spline_on:
+        connector = '..'
+    for i in range(1, points.shape[0]):
+        asy_txt += connector + str(tuple(points[i]))
+    asy_txt += ';\n'
+    if line_on:
+        asy_txt += ('draw(p, ' +
+                    'rgb{0}, '.format(str(color)))
+        if arrow_on:
+            asy_txt += 'arrow = Arrow3, '
+        asy_txt += ('render = render(compression = High, merge = true))' +
+                    ';\n')
+    if points_on:
+        asy_txt += ('dot(p, ' +
+                    'rgb{0}, '.format(str(color)))
+        asy_txt += ('render = render(compression = High, merge = true))' +
+                    ';\n')
+    return asy_txt
+
 def triangulated_surface_to_plain_asy(
         points,
         triangles,
